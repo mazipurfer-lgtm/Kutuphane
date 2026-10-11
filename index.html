@@ -20,6 +20,7 @@
                 <button type="button" class="menu-butonu aktif" id="menu-btn-kitaplar" data-hedef="kitaplar">Kitaplar</button>
                 <button type="button" class="menu-butonu" id="menu-btn-kiralarim" data-hedef="kiralarim">Kiralarım</button>
                 <button type="button" class="menu-butonu" id="menu-btn-yonetim" data-hedef="yonetim">Yönetim</button>
+                <button type="button" class="menu-butonu" id="menu-btn-test" data-hedef="test" style="font-weight: 600;">🧪 Test Laboratuvarı</button>
                 <button type="button" class="menu-butonu" id="menu-btn-giris" data-hedef="giris">Giriş Yap / Kayıt Ol</button>
 
                 <!-- Giriş Yapmış Kullanıcı Alanı -->
@@ -252,6 +253,50 @@
             </div>
         </section>
 
+        <!-- ==================== 5. SAYFA: YAZILIM TEST LABORATUVARI (İTÜ BİDB) ==================== -->
+        <section id="sayfa-test" class="sayfa-bolumu" aria-labelledby="baslik-test">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+                <div>
+                    <h1 class="bolum-basligi" id="baslik-test" style="border-bottom: none; margin-bottom: 4px; padding-bottom: 0;">🧪 Yazılım Test Laboratuvarı</h1>
+                    <span style="font-size: 0.85rem; color: var(--yazi-ikincil); font-weight: 500;">İTÜ BİDB "Yazılım Testi ve Test Süreçleri" Metodolojisine Uygun Canlı Test Süiti</span>
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <a href="sunum.html" target="_blank" class="buton buton-ikincil" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px;">
+                        📊 Sunum Slaytlarını Aç
+                    </a>
+                    <button type="button" class="buton" id="btn-testleri-calistir" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px;">
+                        ▶ Tüm Testleri Çalıştır
+                    </button>
+                </div>
+            </div>
+            <p class="bolum-aciklama">Bu modül, sistemin İTÜ BİDB makalesindeki tüm dinamik test aşamalarından (Birim, Tümleyim, Regresyon, Zorlanım/Performans, Kullanıcı Kabul, Beyaz ve Kara Kutu) otomatik olarak geçirilmesini ve doğrulanmasını sağlar.</p>
+
+            <!-- Test Özet Metrikleri -->
+            <div class="stok-ozet-kutucuklar" style="margin-bottom: 20px;">
+                <div class="ozet-kutusu">
+                    <div class="ozet-kutusu-etiket">Toplam Koşulan Test</div>
+                    <div class="ozet-kutusu-sayi" id="test-ozet-toplam" style="color: var(--ana-renk);">0</div>
+                </div>
+                <div class="ozet-kutusu">
+                    <div class="ozet-kutusu-etiket">Başarılı (Passed)</div>
+                    <div class="ozet-kutusu-sayi" id="test-ozet-basarili" style="color: var(--basari-renk);">0</div>
+                </div>
+                <div class="ozet-kutusu">
+                    <div class="ozet-kutusu-etiket">Başarısız (Failed)</div>
+                    <div class="ozet-kutusu-sayi" id="test-ozet-basarisiz" style="color: var(--hata-renk);">0</div>
+                </div>
+                <div class="ozet-kutusu">
+                    <div class="ozet-kutusu-etiket">Başarı Oranı</div>
+                    <div class="ozet-kutusu-sayi" id="test-ozet-oran" style="color: var(--basari-renk);">%100</div>
+                </div>
+            </div>
+
+            <!-- Test Aşamaları ve Canlı Sonuç Paneli -->
+            <div id="test-sonuclari-kapsayici">
+                <!-- JavaScript ile kategori kategori doldurulacaktır -->
+            </div>
+        </section>
+
     </main>
 
     <!-- BİLDİRİM ÇUBUĞU (TOAST) -->
@@ -265,6 +310,7 @@
     <!-- SCRIPT DOSYALARI -->
     <script src="js/veri.js"></script>
     <script src="js/islemler.js"></script>
+    <script src="js/testler.js"></script>
     <script src="js/arayuz.js"></script>
 </body>
 </html>

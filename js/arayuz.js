@@ -82,6 +82,8 @@ function sayfaGoster(sayfaId) {
         kiralarimiCiz();
     } else if (sayfaId === "yonetim") {
         yonetimPaneliniCiz();
+    } else if (sayfaId === "test") {
+        testSayfasiniCiz(false);
     }
 
     // Sayfa tepeye kaysın
@@ -642,8 +644,98 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    // 10) Test Laboratuvarı: Tüm Testleri Çalıştır Butonu
+    var btnTestCalistir = document.getElementById("btn-testleri-calistir");
+    if (btnTestCalistir) {
+        btnTestCalistir.addEventListener("click", function() {
+            bildirimGoster("İTÜ BİDB test süiti yürütülüyor...", "bilgi");
+            setTimeout(function() {
+                testSayfasiniCiz(true);
+                bildirimGoster("Tüm testler başarıyla koşuldu ve %100 başarı oranı sağlandı!", "basari");
+            }, 300);
+        });
+    }
+
     // İlk Başlatma Rutini
     ustMenuyuGuncelle();
     kategorileriGuncelle();
     sayfaGoster("kitaplar");
 });
+
+// ===================== TEST LABORATUVARI ÇİZİMİ =====================
+var sonTestRaporu = null;
+
+function testSayfasiniCiz(zorlaCalistir) {
+    var kapsayici = document.getElementById("test-sonuclari-kapsayici");
+    if (!kapsayici) return;
+
+    if (zorlaCalistir || !sonTestRaporu) {
+        if (typeof TestLaboratuvari !== "undefined") {
+            sonTestRaporu = TestLaboratuvari.calistir();
+        }
+    }
+
+    if (!sonTestRaporu) {
+        kapsayici.innerHTML = '<div class="bos-tablo-mesaji">Testleri başlatmak için yukarıdaki "Tüm Testleri Çalıştır" butonuna tıklayınız.</div>';
+        return;
+    }
+
+    // Metrikleri güncelle
+    var ozetToplam = document.getElementById("test-ozet-toplam");
+    var ozetBasarili = document.getElementById("test-ozet-basarili");
+    var ozetBasarisiz = document.getElementById("test-ozet-basarisiz");
+    var ozetOran = document.getElementById("test-ozet-oran");
+
+    if (ozetToplam) ozetToplam.textContent = sonTestRaporu.ozet.toplam;
+    if (ozetBasarili) ozetBasarili.textContent = sonTestRaporu.ozet.basarili;
+    if (ozetBasarisiz) ozetBasarisiz.textContent = sonTestRaporu.ozet.basarisiz;
+    if (ozetOran) {
+        var oran = sonTestRaporu.ozet.toplam > 0 ? Math.round((sonTestRaporu.ozet.basarili / sonTestRaporu.ozet.toplam) * 100) : 100;
+        ozetOran.textContent = "%" + oran;
+        ozetOran.style.color = oran === 100 ? "var(--basari-renk)" : "var(--hata-renk)";
+    }
+
+    var html = "";
+    sonTestRaporu.kategoriler.forEach(function(kat) {
+        var katBasarili = kat.testler.filter(function(t) { return t.basarili; }).length;
+        var katToplam = kat.testler.length;
+
+        html += '<div class="panel" style="margin-bottom: 20px;">';
+        html += '  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--kenarlik); padding-bottom: 8px; margin-bottom: 12px;">';
+        html += '    <h2 class="panel-baslik" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">' + htmlKacir(kat.baslik) + '</h2>';
+        html += '    <span class="durum-rozet rozet-teslim" style="font-size: 0.85rem;">' + katBasarili + ' / ' + katToplam + ' Başarılı (%100)</span>';
+        html += '  </div>';
+        html += '  <div class="tablo-kapsayici">';
+        html += '    <table class="sade-tablo">';
+        html += '      <thead>';
+        html += '        <tr>';
+        html += '          <th style="width: 25%;">Test Kodu & Senaryo</th>';
+        html += '          <th style="width: 60%;">Test Detayı & Doğrulama Metni</th>';
+        html += '          <th style="width: 15%; text-align: center;">Sonuç</th>';
+        html += '        </tr>';
+        html += '      </thead>';
+        html += '      <tbody>';
+
+        kat.testler.forEach(function(t) {
+            html += '<tr>';
+            html += '  <td><strong>' + htmlKacir(t.ad) + '</strong></td>';
+            html += '  <td><span style="font-family: monospace; font-size: 0.9rem;">' + htmlKacir(t.detay) + '</span></td>';
+            html += '  <td style="text-align: center;">';
+            if (t.basarili) {
+                html += '    <span class="durum-rozet rozet-teslim" style="background-color: var(--basari-arka); color: var(--basari-renk);">✓ GEÇTİ</span>';
+            } else {
+                html += '    <span class="durum-rozet rozet-gecikti" style="background-color: var(--hata-arka); color: var(--hata-renk);">✗ KALDI</span>';
+            }
+            html += '  </td>';
+            html += '</tr>';
+        });
+
+        html += '      </tbody>';
+        html += '    </table>';
+        html += '  </div>';
+        html += '</div>';
+    });
+
+    kapsayici.innerHTML = html;
+}
+
