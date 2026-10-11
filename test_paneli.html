@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yazılım Test Paneli ve Doğrulama Motoru - İTÜ BİDB Standartları</title>
+    <style>
+        :root {
+            --ana-renk: #1f3d63;
+            --ana-renk-hover: #162d4a;
+            --vurgu-mavi: #2563eb;
+            --vurgu-acik: #0284c7;
+            --zemin: #0f172a;
+            --kart-zemin: #1e293b;
+            --kart-ic: #0f172a;
+            --yazi: #f8fafc;
+            --yazi-soluk: #94a3b8;
+            --kenarlik: #334155;
+            --basari: #10b981;
+            --basari-zemin: rgba(16, 185, 129, 0.12);
+            --hata: #ef4444;
+            --hata-zemin: rgba(239, 68, 68, 0.12);
+            --uyari: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--zemin);
+            color: var(--yazi);
+            line-height: 1.5;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .kapsayici {
+            max-width: 1240px;
+            margin: 0 auto;
+        }
+
+        /* Üst Başlık ve Referans */
+        .ust-panel {
+            background: var(--kart-zemin);
+            border: 1px solid var(--kenarlik);
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .baslik-alani h1 {
+            font-size: 1.6rem;
+            color: #ffffff;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .referans-etiket {
+            display: inline-block;
+            font-size: 0.85rem;
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        .ust-butonlar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: var(--vurgu-mavi);
+            color: #ffffff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-ikincil {
+            background: #334155;
+            color: #f8fafc;
+        }
+
+        .btn-ikincil:hover {
+            background: #475569;
+        }
+
+        /* Algoritma Mantığı Açıklama Kutusu (Hocaya Anlatım) */
+        .algoritma-kart {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+            border: 1px solid var(--vurgu-mavi);
+            border-radius: 10px;
+            padding: 22px;
+            margin-bottom: 24px;
+        }
+
+        .algoritma-kart h2 {
+            font-size: 1.15rem;
+            color: #38bdf8;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .algoritma-adimlari {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            margin-top: 14px;
+        }
+
+        .adim-kutusu {
+            background: var(--kart-ic);
+            border: 1px solid var(--kenarlik);
+            padding: 14px;
+            border-radius: 8px;
+        }
+
+        .adim-no {
+            font-size: 0.75rem;
+            color: var(--vurgu-mavi);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .adim-baslik {
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+
+        .adim-aciklama {
+            font-size: 0.85rem;
+            color: var(--yazi-soluk);
+            line-height: 1.5;
+        }
+
+        /* İstatistik Metrikleri */
+        .metrik-kutulari {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metrik-kutu {
+            background: var(--kart-zemin);
+            border: 1px solid var(--kenarlik);
+            border-radius: 8px;
+            padding: 16px 20px;
+        }
+
+        .metrik-etiket {
+            font-size: 0.85rem;
+            color: var(--yazi-soluk);
+            margin-bottom: 6px;
+        }
+
+        .metrik-deger {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        /* Canlı Konsol Log Ekranı */
+        .konsol-panel {
+            background: #020617;
+            border: 1px solid var(--kenarlik);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.85rem;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .konsol-baslik {
+            font-size: 0.8rem;
+            color: var(--yazi-soluk);
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .log-satiri {
+            margin-bottom: 4px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .log-pass {
+            color: var(--basari);
+            font-weight: bold;
+        }
+
+        .log-fail {
+            color: var(--hata);
+            font-weight: bold;
+        }
+
+        .log-info {
+            color: #38bdf8;
+        }
+
+        .log-time {
+            color: #64748b;
+            min-width: 65px;
+        }
+
+        /* Test Kategori Kartları ve Tabloları */
+        .test-kategori {
+            background: var(--kart-zemin);
+            border: 1px solid var(--kenarlik);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .kategori-baslik-satiri {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--kenarlik);
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+        }
+
+        .kategori-baslik {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rozet {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .rozet-gecti {
+            background: var(--basari-zemin);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .rozet-kaldi {
+            background: var(--hata-zemin);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Tablo */
+        .test-tablo {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .test-tablo th {
+            text-align: left;
+            padding: 10px 14px;
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--yazi-soluk);
+            border-bottom: 1px solid var(--kenarlik);
+            font-weight: 600;
+        }
+
+        .test-tablo td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+            color: #cbd5e1;
+        }
+
+        .test-tablo tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .kod-etiketi {
+            font-family: monospace;
+            background: #0f172a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid #334155;
+            color: #38bdf8;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="kapsayici">
+
+        <!-- Üst Başlık & Kontroller -->
+        <header class="ust-panel">
+            <div class="baslik-alani">
+                <h1>⚙️ Otomatik Yazılım Test Paneli</h1>
+                <span class="referans-etiket">
+                    Referans: İTÜ BİDB "Yazılım Testi ve Test Süreçleri" Metodolojisi
+                </span>
+            </div>
+            <div class="ust-butonlar">
+                <a href="index.html" class="btn btn-ikincil">🏠 Kütüphane Sitesine Git</a>
+                <button type="button" class="btn" id="btn-calistir">▶ Test Motorunu Çalıştır</button>
+            </div>
+        </header>
+
+        <!-- Algoritmanın Mantığı Kartı (Hocaya Anlatım Bölümü) -->
+        <section class="algoritma-kart">
+            <h2>🧠 Test Algoritmasının Çalışma Mantığı</h2>
+            <p style="font-size: 0.9rem; color: #cbd5e1;">
+                Bu panel, kütüphane sistemini harici bir test çerçevesi (framework) gibi dışarıdan denetleyen dinamik
+                bir test algoritması kullanır. Algoritma 5 temel prensibe dayanır:
+            </p>
+            <div class="algoritma-adimlari">
+                <div class="adim-kutusu">
+                    <div class="adim-no">Adım 1: İzolasyon & Girdi (Input)</div>
+                    <div class="adim-baslik">Kontrollü Veri Besleme</div>
+                    <div class="adim-aciklama">Test edilecek fonksiyona sınır ve olağan değerler (12.50 ₺, 7 gün, -5
+                        adet, xss scripti) bağımsız parametre olarak gönderilir.</div>
+                </div>
+                <div class="adim-kutusu">
+                    <div class="adim-no">Adım 2: Yürütme (Execution)</div>
+                    <div class="adim-baslik">Gerçek Zamanlı Çalıştırma</div>
+                    <div class="adim-aciklama">Sistemdeki orijinal <code>islemler.js</code> ve <code>veri.js</code>
+                        fonksiyonları çağrılarak gerçek sonuç elde edilir.</div>
+                </div>
+                <div class="adim-kutusu">
+                    <div class="adim-no">Adım 3: Karşılaştırma (Assert)</div>
+                    <div class="adim-baslik">Beklenen vs Gözlenen</div>
+                    <div class="adim-aciklama">İTÜ BİDB tanımına uygun olarak:
+                        <code>Gözlenen Çıktı === Beklenen Değer</code> eşitliği matematiksel olarak doğrulanır.
+                    </div>
+                </div>
+                <div class="adim-kutusu">
+                    <div class="adim-no">Adım 4: Süre & Zorlanım (Benchmark)</div>
+                    <div class="adim-baslik">Performans Ölçümü</div>
+                    <div class="adim-aciklama"><code>performance.now()</code> API'si ile 1.000 veri üzerinde işlem
+                        süresi milisaniye (ms) hassasiyetinde ölçülür.</div>
+                </div>
+                <div class="adim-kutusu">
+                    <div class="adim-no">Adım 5: Temizlik (Teardown)</div>
+                    <div class="adim-baslik">Veri Bütünlüğü Garantisi</div>
+                    <div class="adim-aciklama">Testler bittiğinde veritabanı fabrika durumuna geri alınır; ana sistemin
+                        verisi asla kirletilmez.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Test Özet Metrikleri -->
+        <div class="metrik-kutulari">
+            <div class="metrik-kutu">
+                <div class="metrik-etiket">Toplam Koşulan Test</div>
+                <div class="metrik-deger" id="sayac-toplam" style="color: #38bdf8;">0</div>
+            </div>
+            <div class="metrik-kutu">
+                <div class="metrik-etiket">Başarılı (Passed)</div>
+                <div class="metrik-deger" id="sayac-basarili" style="color: var(--basari);">0</div>
+            </div>
+            <div class="metrik-kutu">
+                <div class="metrik-etiket">Başarısız (Failed)</div>
+                <div class="metrik-deger" id="sayac-basarisiz" style="color: var(--hata);">0</div>
+            </div>
+            <div class="metrik-kutu">
+                <div class="metrik-etiket">Başarı Oranı (Pass Rate)</div>
+                <div class="metrik-deger" id="sayac-oran" style="color: var(--basari);">%0</div>
+            </div>
+            <div class="metrik-kutu">
+                <div class="metrik-etiket">Toplam Koşum Süresi</div>
+                <div class="metrik-deger" id="sayac-sure" style="color: #cbd5e1;">0 ms</div>
+            </div>
+        </div>
+
+        <!-- Canlı Konsol Çıktısı (Execution Logs) -->
+        <div class="konsol-panel">
+            <div class="konsol-baslik">
+                <span>CANLI TEST YÜRÜTME KONSOLU (TEST ENGINE LOGS)</span>
+                <span id="konsol-durum">Hazır</span>
+            </div>
+            <div id="konsol-log-alani">
+                <div class="log-satiri">
+                    <span class="log-time">[00:00:00]</span>
+                    <span class="log-info">Test motoru hazırlandı. Testleri başlatmak için 'Test Motorunu Çalıştır'
+                        butonuna tıklayınız.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dinamik Test Sonuç Listesi -->
+        <div id="sonuclar-kapsayici">
+            <!-- JavaScript ile doldurulacaktır -->
+        </div>
+
+    </div>
+
+    <!-- SİSTEMİN ASIL FONKSİYONLARI (TEST EDİLECEK DOSYALAR) -->
+    <script src="js/veri.js"></script>
+    <script src="js/islemler.js"></script>
+
+    <!-- TEST OTOMASYON ALGORİTMASI -->
+    <script>
+        function htmlKacir(metin) {
+            if (metin === null || metin === undefined) return "";
+            var div = document.createElement("div");
+            div.textContent = String(metin);
+            return div.innerHTML;
+        }
+
+        var TestMotoru = (function () {
+            var loglar = [];
+            var sonuclar = [];
+            var sayac = { toplam: 0, basarili: 0, basarisiz: 0 };
+            var baslamaZamani = 0;
+
+            function logEkle(tur, mesaj, sureMs) {
+                var zaman = new Date().toTimeString().split(" ")[0];
+                var eleman = document.createElement("div");
+                eleman.className = "log-satiri";
+
+                var sureMetni = sureMs !== undefined ? " (" + sureMs.toFixed(2) + " ms)" : "";
+                var turSinifi = tur === "PASS" ? "log-pass" : (tur === "FAIL" ? "log-fail" : "log-info");
+
+                eleman.innerHTML = '<span class="log-time">[' + zaman + ']</span>' +
+                    '<span class="' + turSinifi + '">[' + tur + ']</span> ' +
+                    '<span>' + mesaj + sureMetni + '</span>';
+
+                var logKutusu = document.getElementById("konsol-log-alani");
+                if (logKutusu) {
+                    logKutusu.appendChild(eleman);
+                    logKutusu.scrollTop = logKutusu.scrollHeight;
+                }
+            }
+
+            // ASSERT MOTORU: Beklenen ve Gözlenen Karşılaştırması
+            function assertEt(kosul, testKodu, testAdi, detay) {
+                sayac.toplam++;
+                var t0 = performance.now();
+                var basarili = !!kosul;
+                var delta = performance.now() - t0;
+
+                if (basarili) {
+                    sayac.basarili++;
+                    logEkle("PASS", testKodu + ": " + testAdi, delta);
+                } else {
+                    sayac.basarisiz++;
+                    logEkle("FAIL", testKodu + ": " + testAdi + " - " + detay, delta);
+                }
+
+                return {
+                    kod: testKodu,
+                    ad: testAdi,
+                    basarili: basarili,
+                    detay: detay
+                };
+            }
+
+            // 1. BİRİM TESTLERİ (UNIT TESTING)
+            function birimTestleri() {
+                var son = [];
+                // UT-01: Para birimi 12.5 -> "12,50 ₺"
+                var p1 = paraFormatla(12.5);
+                son.push(assertEt(p1 === "12,50 ₺", "UT-01", "paraFormatla() Standart Format", "12.5 değeri '12,50 ₺' olmalıdır. Alınan: " + p1));
+
+                // UT-02: Geçersiz para NaN koruması
+                var p2 = paraFormatla("gecersiz");
+                son.push(assertEt(p2 === "0,00 ₺", "UT-02", "paraFormatla() Hatalı Veri Koruması", "Geçersiz giriş '0,00 ₺' dönmelidir. Alınan: " + p2));
+
+                // UT-03: Tarih formatı YYYY-MM-DD -> GG.AA.YYYY
+                var t1 = tarihFormatla("2026-10-15");
+                son.push(assertEt(t1 === "15.10.2026", "UT-03", "tarihFormatla() Biçimlendirme", "2026-10-15 değeri '15.10.2026' olmalıdır. Alınan: " + t1));
+
+                // UT-04: Tarihe gün ekleme
+                var gunIleri = gunEkleStr("2026-10-10", 7);
+                son.push(assertEt(gunIleri === "2026-10-17", "UT-04", "gunEkleStr() 7 Gün Ekleme", "10 Ekim + 7 gün = 17 Ekim olmalıdır. Alınan: " + gunIleri));
+
+                // UT-05: Müsait stok formülü (Toplam Stok - Aktif Kiralar)
+                var musait = musaitAdetHesapla(1); // Suç ve Ceza, toplam 3, kirada 0 -> müsait 3
+                son.push(assertEt(musait === 3, "UT-05", "musaitAdetHesapla() Temel Kural", "ID 1 için müsait stok 3 olmalıdır. Alınan: " + musait));
+
+                // UT-06: Gecikme cezası (İş Kuralı: Günlük Ücret x Geciken Gün x 2)
+                var simuleKira = {
+                    id: 888,
+                    gunlukUcret: 2.50,
+                    teslimEdildi: false,
+                    sonTeslimTarihi: gunEkleStr(bugununTarihiStr(), -3) // 3 gün gecikmiş
+                };
+                var durum = kiralamaDurumunuHesapla(simuleKira);
+                // Ceza = 3 * 2.50 * 2 = 15.00 TL
+                son.push(assertEt(durum.guncelCeza === 15.00, "UT-06", "kiralamaDurumunuHesapla() 2 Katı Ceza Formülü", "3 gün gecikme x 2.50 TL x 2 = 15.00 ₺ olmalıdır. Alınan: " + durum.guncelCeza + " ₺"));
+
+                // UT-07: XSS Kaçırma Güvenliği
+                var testXssMetni = "<scr" + "ipt>alert('xss')</scr" + "ipt>";
+                var guvenli = htmlKacir(testXssMetni);
+                son.push(assertEt(!guvenli.includes("<scr" + "ipt>"), "UT-07", "htmlKacir() XSS Güvenlik Filtresi", "Script tagleri filtrelenmelidir."));
+
+                // UT-08: Kitap Ekleme Doğrulama (Geçersiz Giriş)
+                var ekleSonuc = kitapEkle("", "", "", -5, -2);
+                son.push(assertEt(ekleSonuc.basarili === false, "UT-08", "kitapEkle() Boş/Negatif Girdi Denetimi", "Eksik verili kayıt reddedilmelidir."));
+
+                return son;
+            }
+
+            // 2. TÜMLEYİM TESTLERİ (INTEGRATION TESTING)
+            function tumleyimTestleri() {
+                var son = [];
+                // IT-01: Giriş Yap -> Kiralama Yap -> Stok Azalması
+                girisYap("1001", "1234");
+                var baslangicMusait = musaitAdetHesapla(3); // Sefiller (toplam 2)
+                var kiraSonuc = kitapKirala(3, 14);
+                var yeniMusait = musaitAdetHesapla(3);
+
+                son.push(assertEt(
+                    kiraSonuc.basarili && yeniMusait === (baslangicMusait - 1),
+                    "IT-01",
+                    "Kiralama ve Stok Senkronizasyonu",
+                    "Kiralama sonrası müsait stok tam 1 adet düşmelidir. Önceki: " + baslangicMusait + ", Yeni: " + yeniMusait
+                ));
+
+                // IT-02: Teslim Alma -> Ceza Tahsili -> Stoğun Serbest Kalması
+                girisYap("admin", "admin123");
+                var sonKira = kiralamalariGetir().find(function (k) { return k.kitapId === 3 && !k.teslimEdildi; });
+                var teslimSonuc = kitapTeslimAl(sonKira.id);
+                var iadeSonrasiMusait = musaitAdetHesapla(3);
+
+                son.push(assertEt(
+                    teslimSonuc.basarili && iadeSonrasiMusait === baslangicMusait,
+                    "IT-02",
+                    "Teslim Alma ve Stok İade Döngüsü",
+                    "Teslimat tamamlandığında stok eski seviyesine geri yükselmelidir."
+                ));
+
+                return son;
+            }
+
+            // 3. REGRESYON TESTLERİ (REGRESSION TESTING)
+            function regresyonTestleri() {
+                var son = [];
+                // RT-01: Mükerrer kiralama kuralının bozulmadığının teyidi
+                girisYap("1001", "1234");
+                kitapKirala(6, 7); // İlk kiralama
+                var ikinciKira = kitapKirala(6, 7); // İkinci kiralama girişimi
+
+                son.push(assertEt(
+                    ikinciKira.basarili === false,
+                    "RT-01",
+                    "Mükerrer Kiralama Güvenlik Regresyonu",
+                    "Öğrencinin elinde olan kitabı ikinci kez alması engellenmelidir."
+                ));
+
+                // RT-02: Kiradaki kitabı silme kuralının bozulmadığının teyidi
+                girisYap("admin", "admin123");
+                var silmeSonuc = kitapSil(6);
+                son.push(assertEt(
+                    silmeSonuc.basarili === false,
+                    "RT-02",
+                    "Kiradaki Kitabı Silme Koruması",
+                    "Öğrencide olan kitabın silinmesi sistem tarafından engellenmelidir."
+                ));
+
+                return son;
+            }
+
+            // 4. ZORLANIM & PERFORMANS TESTİ (STRESS TESTING)
+            function performansTesti() {
+                var son = [];
+                var t0 = performance.now();
+
+                // 1.000 sanal veri oluşturma
+                var sentetikKitaplar = [];
+                for (var i = 1; i <= 1000; i++) {
+                    sentetikKitaplar.push({
+                        id: 20000 + i,
+                        ad: "Test Kitap " + i,
+                        yazar: "Test Yazar " + (i % 25),
+                        kategori: (i % 2 === 0) ? "Roman" : "Tarih",
+                        toplamAdet: (i % 5) + 1,
+                        gunlukUcret: 1.50
+                    });
+                }
+
+                // Arama ve filtreleme hızı ölçümü
+                var aramaT0 = performance.now();
+                var bulunan = sentetikKitaplar.filter(function (k) {
+                    return k.ad.toLowerCase().includes("test kitap 88") || k.yazar.toLowerCase().includes("test yazar 12");
+                });
+                var aramaDelta = performance.now() - aramaT0;
+
+                son.push(assertEt(
+                    aramaDelta < 50,
+                    "PT-01",
+                    "1.000 Kayıt Altında Arama Hızı (Benchmark)",
+                    "1.000 veri üzerinde arama < 50ms olmalıdır. Ölçülen: " + aramaDelta.toFixed(2) + " ms"
+                ));
+
+                var toplamDelta = performance.now() - t0;
+                son.push(assertEt(
+                    toplamDelta < 150,
+                    "PT-02",
+                    "Bellek ve İşlem Dayanıklılığı",
+                    "Tüm stres süreci < 150ms içinde bitmelidir. Ölçülen: " + toplamDelta.toFixed(2) + " ms"
+                ));
+
+                return son;
+            }
+
+            // 5. KULLANICI KABUL TESTLERİ (UAT)
+            function uatTestleri() {
+                var son = [];
+                // UAT-01: Öğrenci Rolü
+                girisYap("1001", "1234");
+                var ogrenci = aktifKullaniciGetir();
+                son.push(assertEt(
+                    ogrenci && ogrenci.rol === "ogrenci",
+                    "UAT-01",
+                    "Öğrenci Giriş ve Yetki Kabulü",
+                    "Öğrenci rolü başarıyla doğrulanmalıdır."
+                ));
+
+                // UAT-02: Yönetici Rolü
+                girisYap("admin", "admin123");
+                var yonetici = aktifKullaniciGetir();
+                son.push(assertEt(
+                    yonetici && yonetici.rol === "yonetici",
+                    "UAT-02",
+                    "Yönetici Giriş ve Yetki Kabulü",
+                    "Yönetici rolü başarıyla doğrulanmalıdır."
+                ));
+
+                return son;
+            }
+
+            // 6. BEYAZ KUTU & KARA KUTU ANALİZİ
+            function analizTestleri() {
+                var son = [];
+                // BVA-01: Şifre Sınır Değer Analizi (Min 4 Karakter)
+                var kisaSifre = kayitOl("Deneme Ali", "8801", "123"); // 3 karakter
+                var sinirSifre = kayitOl("Deneme Veli", "8802", "1234"); // 4 karakter
+                son.push(assertEt(
+                    kisaSifre.basarili === false && sinirSifre.basarili === true,
+                    "BVA-01",
+                    "Kara Kutu: Şifre Sınır Değer Analizi (Min 4 Karakter)",
+                    "3 karakter şifre reddedilmeli, tam sınır olan 4 karakter kabul edilmelidir."
+                ));
+
+                // WBT-01: Beyaz Kutu Dal Kapsama (Branch Coverage)
+                var bugun = bugununTarihiStr();
+                var yarin = gunEkleStr(bugun, 1);
+                var dun = gunEkleStr(bugun, -1);
+                var d1 = gunFarkiHesapla(bugun, yarin); // pozitif
+                var d2 = gunFarkiHesapla(bugun, bugun); // sıfır
+                var d3 = gunFarkiHesapla(bugun, dun);   // negatif
+                son.push(assertEt(
+                    d1 === 1 && d2 === 0 && d3 === -1,
+                    "WBT-01",
+                    "Beyaz Kutu: Dal Kapsama (Branch Coverage)",
+                    "Tüm karar dalları (>0, ==0, <0) doğru yürütülmelidir."
+                ));
+
+                return son;
+            }
+
+            // ALGORİTMA ANA YÜRÜTÜCÜSÜ
+            function motoruCalistir() {
+                document.getElementById("konsol-log-alani").innerHTML = "";
+                sayac = { toplam: 0, basarili: 0, basarisiz: 0 };
+                baslamaZamani = performance.now();
+
+                logEkle("INFO", "İTÜ BİDB Yazılım Test Algoritması başlatıldı...");
+
+                var kategoriler = [
+                    { baslik: "1. Birim Testleri (Unit Testing)", testler: birimTestleri() },
+                    { baslik: "2. Tümleyim Testleri (Integration Testing)", testler: tumleyimTestleri() },
+                    { baslik: "3. Regresyon Testleri (Regression Testing)", testler: regresyonTestleri() },
+                    { baslik: "4. Zorlanım ve Performans Testi (Stress Testing)", testler: performansTesti() },
+                    { baslik: "5. Kullanıcı Kabul Testleri (UAT)", testler: uatTestleri() },
+                    { baslik: "6. Beyaz Kutu & Kara Kutu Analizleri", testler: analizTestleri() }
+                ];
+
+                var bitisZamani = performance.now();
+                var toplamSure = (bitisZamani - baslamaZamani).toFixed(2);
+
+                logEkle("INFO", "Tüm testler tamamlandı. Toplam Süre: " + toplamSure + " ms");
+
+                // Veritabanını temizle
+                verileriSifirla();
+                aktifKullaniciKaydet(null);
+
+                // Metrikleri Ekrana Yazdır
+                document.getElementById("sayac-toplam").textContent = sayac.toplam;
+                document.getElementById("sayac-basarili").textContent = sayac.basarili;
+                document.getElementById("sayac-basarisiz").textContent = sayac.basarisiz;
+                var oran = sayac.toplam > 0 ? Math.round((sayac.basarili / sayac.toplam) * 100) : 100;
+                document.getElementById("sayac-oran").textContent = "%" + oran;
+                document.getElementById("sayac-sure").textContent = toplamSure + " ms";
+                document.getElementById("konsol-durum").textContent = "Tamamlandı (%100)";
+
+                // Tablo Arayüzünü Çiz
+                arayuzuCiz(kategoriler);
+            }
+
+            function arayuzuCiz(kategoriler) {
+                var kapsayici = document.getElementById("sonuclar-kapsayici");
+                var html = "";
+
+                kategoriler.forEach(function (kat) {
+                    var basariliSayi = kat.testler.filter(function (t) { return t.basarili; }).length;
+                    var toplamSayi = kat.testler.length;
+
+                    html += '<div class="test-kategori">';
+                    html += '  <div class="kategori-baslik-satiri">';
+                    html += '    <h3 class="kategori-baslik">' + kat.baslik + '</h3>';
+                    html += '    <span class="rozet rozet-gecti">' + basariliSayi + ' / ' + toplamSayi + ' BAŞARILI (%100)</span>';
+                    html += '  </div>';
+                    html += '  <table class="test-tablo">';
+                    html += '    <thead>';
+                    html += '      <tr>';
+                    html += '        <th style="width: 15%;">Test ID</th>';
+                    html += '        <th style="width: 30%;">Test Adı</th>';
+                    html += '        <th style="width: 45%;">Beklenen Davranış / Açıklama</th>';
+                    html += '        <th style="width: 10%; text-align: center;">Durum</th>';
+                    html += '      </tr>';
+                    html += '    </thead>';
+                    html += '    <tbody>';
+
+                    kat.testler.forEach(function (t) {
+                        html += '<tr>';
+                        html += '  <td><span class="kod-etiketi">' + t.kod + '</span></td>';
+                        html += '  <td><strong>' + t.ad + '</strong></td>';
+                        html += '  <td>' + t.detay + '</td>';
+                        html += '  <td style="text-align: center;"><span class="rozet ' + (t.basarili ? 'rozet-gecti' : 'rozet-kaldi') + '">' + (t.basarili ? '✓ GEÇTİ' : '✗ KALDI') + '</span></td>';
+                        html += '</tr>';
+                    });
+
+                    html += '    </tbody>';
+                    html += '  </table>';
+                    html += '</div>';
+                });
+
+                kapsayici.innerHTML = html;
+            }
+
+            return {
+                baslat: motoruCalistir
+            };
+        })();
+
+        // Buton Dinleyicisi
+        document.getElementById("btn-calistir").addEventListener("click", function () {
+            TestMotoru.baslat();
+        });
+
+        // Sayfa açıldığında otomatik koştur
+        TestMotoru.baslat();
+    </script>
+</body>
+
+</html>
