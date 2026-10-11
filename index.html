@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Okul Kütüphanesi - Kitap Kiralama Sistemi</title>
+    <link rel="stylesheet" href="css/stil.css">
+</head>
+<body>
+
+    <!-- ÜST BAR (NAVİGASYON) -->
+    <header class="ust-bar">
+        <div class="ust-bar-icerik">
+            <div class="site-baslik-alani">
+                <a href="#kitaplar" class="site-ana-baslik" id="logo-link">Okul Kütüphanesi</a>
+                <span class="site-alt-baslik">Kitap Kiralama Sistemi</span>
+            </div>
+
+            <nav class="ana-menu" aria-label="Ana Menü">
+                <button type="button" class="menu-butonu aktif" id="menu-btn-kitaplar" data-hedef="kitaplar">Kitaplar</button>
+                <button type="button" class="menu-butonu" id="menu-btn-kiralarim" data-hedef="kiralarim">Kiralarım</button>
+                <button type="button" class="menu-butonu" id="menu-btn-yonetim" data-hedef="yonetim">Yönetim</button>
+                <button type="button" class="menu-butonu" id="menu-btn-giris" data-hedef="giris">Giriş Yap / Kayıt Ol</button>
+
+                <!-- Giriş Yapmış Kullanıcı Alanı -->
+                <div class="kullanici-bilgi-kapsayici" id="kullanici-alani" style="display: none;">
+                    <span class="kullanici-etiket">
+                        <span class="kullanici-adi-vurgu" id="kullanici-adi-gostergesi">Ahmet Yılmaz</span>
+                        <span id="kullanici-rol-gostergesi">(Öğrenci)</span>
+                    </span>
+                    <button type="button" class="cikis-butonu" id="btn-cikis-yap">Çıkış</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ANA İÇERİK BÖLÜMÜ -->
+    <main class="ana-icerik">
+
+        <!-- ==================== 1. SAYFA: KİTAP KATALOĞU ==================== -->
+        <section id="sayfa-kitaplar" class="sayfa-bolumu aktif-sayfa" aria-labelledby="baslik-katalog">
+            <h1 class="bolum-basligi" id="baslik-katalog">Kitap Kataloğu</h1>
+            <p class="bolum-aciklama">Kütüphanemizdeki kitapları inceleyebilir, müsait durumdaki kitapları günlük ücret üzerinden belirlediğiniz süreyle ödünç kiralayabilirsiniz.</p>
+
+            <!-- Arama ve Kategori Filtresi -->
+            <div class="arama-ve-filtre-bari">
+                <div class="arama-kutusu-alani">
+                    <input type="text" id="katalog-arama-input" class="form-kontrol" placeholder="Kitap adı veya yazar adına göre ara..." aria-label="Kitap veya yazar ara">
+                </div>
+                <div class="filtre-kutusu-alani">
+                    <select id="katalog-kategori-select" class="form-kontrol" aria-label="Kategoriye göre filtrele">
+                        <option value="">Tüm Kategoriler</option>
+                    </select>
+                </div>
+                <div class="arama-bilgi-metni" id="katalog-filtre-bilgisi">Toplam 8 kitap listeleniyor.</div>
+            </div>
+
+            <!-- Kitap Kartları Grid Alanı -->
+            <div class="kitap-grid" id="kitap-listesi-kapsayici">
+                <!-- JavaScript ile dinamik olarak doldurulacaktır -->
+            </div>
+        </section>
+
+        <!-- ==================== 2. SAYFA: GİRİŞ VE KAYIT ==================== -->
+        <section id="sayfa-giris" class="sayfa-bolumu" aria-labelledby="baslik-giris-kayit">
+            <h1 class="bolum-basligi" id="baslik-giris-kayit">Öğrenci & Yönetici Girişi</h1>
+            <p class="bolum-aciklama">Kitap kiralamak veya kütüphane yönetim işlemlerini gerçekleştirmek için lütfen giriş yapınız.</p>
+
+            <!-- Deneme Hesapları Bilgilendirmesi -->
+            <div class="deneme-hesaplari-kutusu">
+                <strong>Yazılım Testi İçin Hazır Deneme Hesapları:</strong>
+                <ul>
+                    <li><strong>Öğrenci Hesabı:</strong> Okul No: <code>1001</code> | Şifre: <code>1234</code></li>
+                    <li><strong>Yönetici (Kütüphaneci):</strong> Kullanıcı Adı: <code>admin</code> | Şifre: <code>admin123</code></li>
+                </ul>
+            </div>
+
+            <div class="giris-kayit-izgara">
+                <!-- Giriş Yap Kutusu -->
+                <div class="panel">
+                    <h2 class="panel-baslik">Giriş Yap</h2>
+                    <div id="giris-mesaj-kutusu" class="form-mesaj" role="alert"></div>
+                    <form id="form-giris" autocomplete="off">
+                        <div class="form-satiri">
+                            <label for="giris-okul-no">Okul Numarası / Yönetici Adı</label>
+                            <input type="text" id="giris-okul-no" class="form-kontrol" placeholder="Örn: 1001 veya admin" required>
+                        </div>
+                        <div class="form-satiri">
+                            <label for="giris-sifre">Şifre</label>
+                            <input type="password" id="giris-sifre" class="form-kontrol" placeholder="Şifrenizi giriniz" required>
+                        </div>
+                        <button type="submit" class="buton" style="width: 100%;">Giriş Yap</button>
+                    </form>
+                </div>
+
+                <!-- Kayıt Ol Kutusu -->
+                <div class="panel">
+                    <h2 class="panel-baslik">Yeni Öğrenci Kaydı</h2>
+                    <div id="kayit-mesaj-kutusu" class="form-mesaj" role="alert"></div>
+                    <form id="form-kayit" autocomplete="off">
+                        <div class="form-satiri">
+                            <label for="kayit-ad-soyad">Ad Soyad</label>
+                            <input type="text" id="kayit-ad-soyad" class="form-kontrol" placeholder="Örn: Zeynep Kaya" required>
+                        </div>
+                        <div class="form-satiri">
+                            <label for="kayit-okul-no">Okul Numarası</label>
+                            <input type="text" id="kayit-okul-no" class="form-kontrol" placeholder="Örn: 1042" required>
+                            <span class="ipucu">Aynı okul numarasıyla ikinci bir kayıt yapılamaz.</span>
+                        </div>
+                        <div class="form-satiri">
+                            <label for="kayit-sifre">Şifre</label>
+                            <input type="password" id="kayit-sifre" class="form-kontrol" placeholder="En az 4 karakter" minlength="4" required>
+                            <span class="ipucu">Şifreniz en az 4 karakter uzunluğunda olmalıdır.</span>
+                        </div>
+                        <button type="submit" class="buton buton-ikincil" style="width: 100%;">Kayıt Ol</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 3. SAYFA: KİRALARIM (ÖĞRENCİ) ==================== -->
+        <section id="sayfa-kiralarim" class="sayfa-bolumu" aria-labelledby="baslik-kiralarim">
+            <h1 class="bolum-basligi" id="baslik-kiralarim">Ödünç Aldığım Kitaplar</h1>
+            <p class="bolum-aciklama">Kiraladığınız kitapların alış tarihini, son teslim tarihini, toplam ücretini ve güncel teslim durumunu buradan takip edebilirsiniz.</p>
+
+            <div class="tablo-kapsayici">
+                <table class="sade-tablo" aria-label="Kiralanan Kitaplar Tablosu">
+                    <thead>
+                        <tr>
+                            <th>Kitap Adı</th>
+                            <th>Alış Tarihi</th>
+                            <th>Son Teslim Tarihi</th>
+                            <th>Süre</th>
+                            <th>Kiralama Ücreti</th>
+                            <th>Teslim Durumu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="kiralarim-tablo-govdesi">
+                        <!-- JavaScript ile doldurulacaktır -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ==================== 4. SAYFA: YÖNETİM PANELİ (YÖNETİCİ) ==================== -->
+        <section id="sayfa-yonetim" class="sayfa-bolumu" aria-labelledby="baslik-yonetim">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: gap: 10px; margin-bottom: 6px;">
+                <h1 class="bolum-basligi" id="baslik-yonetim" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">Kütüphane Yönetim Paneli</h1>
+                <button type="button" class="buton buton-tehlike buton-kucuk" id="btn-verileri-sifirla" title="Tüm verileri başlangıç fabrika durumuna geri alır">Verileri Sıfırla</button>
+            </div>
+            <p class="bolum-aciklama">Kitap stoğunu güncelleyebilir, yeni kitap ekleyebilir ve teslim bekleyen kiralama işlemlerini kontrol edebilirsiniz.</p>
+
+            <!-- Özet İstatistik Kutuları -->
+            <div class="stok-ozet-kutucuklar">
+                <div class="ozet-kutusu">
+                    <div class="ozet-kutusu-etiket">Toplam Kitap Çeşidi</div>
+                    <div class="ozet-kutusu-sayi" id="ozet-toplam-cesit">0</div>
+                </div>
+                <div class="ozet-kutusu">
+                    <div class="ozet-kutusu-etiket">Toplam Kitap Adedi</div>
+                    <div class="ozet-kutusu-sayi" id="ozet-toplam-adet">0</div>
+                </div>
+                <div class="ozet-kutusu">
+                    <div class="ozet-kutusu-etiket">Kiradaki Kitap Adedi</div>
+                    <div class="ozet-kutusu-sayi" id="ozet-kirada-adet">0</div>
+                </div>
+                <div class="ozet-kutusu">
+                    <div class="ozet-kutusu-etiket">Müsait Kitap Adedi</div>
+                    <div class="ozet-kutusu-sayi" id="ozet-musait-adet">0</div>
+                </div>
+            </div>
+
+            <!-- Yeni Kitap Ekleme Formu -->
+            <div class="panel">
+                <h2 class="panel-baslik">Yeni Kitap Ekle</h2>
+                <form id="form-kitap-ekle" autocomplete="off">
+                    <div class="form-grid-3">
+                        <div class="form-satiri">
+                            <label for="ekle-kitap-adi">Kitap Adı</label>
+                            <input type="text" id="ekle-kitap-adi" class="form-kontrol" placeholder="Örn: Nutuk" required>
+                        </div>
+                        <div class="form-satiri">
+                            <label for="ekle-yazar">Yazar</label>
+                            <input type="text" id="ekle-yazar" class="form-kontrol" placeholder="Örn: Mustafa Kemal Atatürk" required>
+                        </div>
+                        <div class="form-satiri">
+                            <label for="ekle-kategori">Kategori</label>
+                            <input type="text" id="ekle-kategori" class="form-kontrol" placeholder="Örn: Tarih, Roman, Bilgisayar" required>
+                        </div>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-satiri">
+                            <label for="ekle-adet">Toplam Stok Adedi</label>
+                            <input type="number" id="ekle-adet" class="form-kontrol" min="1" step="1" value="1" required>
+                        </div>
+                        <div class="form-satiri">
+                            <label for="ekle-gunluk-ucret">Günlük Kiralama Ücreti (₺)</label>
+                            <input type="number" id="ekle-gunluk-ucret" class="form-kontrol" min="0" step="0.25" value="1.00" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="buton">Kitap Ekle</button>
+                </form>
+            </div>
+
+            <!-- Stok ve Kitap Listesi Tablosu -->
+            <div class="panel">
+                <h2 class="panel-baslik">Mevcut Kitap Stoğu</h2>
+                <div class="tablo-kapsayici">
+                    <table class="sade-tablo" aria-label="Kitap Stok Tablosu">
+                        <thead>
+                            <tr>
+                                <th>#ID</th>
+                                <th>Kitap Adı</th>
+                                <th>Yazar</th>
+                                <th>Kategori</th>
+                                <th>Günlük Ücret</th>
+                                <th>Toplam Adet</th>
+                                <th>Kirada</th>
+                                <th>Müsait</th>
+                                <th>İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="yonetim-stok-tablo-govdesi">
+                            <!-- JavaScript ile doldurulacaktır -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tüm Kiralamalar ve Teslim Alma Tablosu -->
+            <div class="panel">
+                <h2 class="panel-baslik">Tüm Kiralama Kayıtları & Teslim Alma</h2>
+                <div class="tablo-kapsayici">
+                    <table class="sade-tablo" aria-label="Tüm Kiralamalar Tablosu">
+                        <thead>
+                            <tr>
+                                <th>#Kira No</th>
+                                <th>Öğrenci Adı (No)</th>
+                                <th>Kitap Adı</th>
+                                <th>Alış Tarihi</th>
+                                <th>Son Teslim</th>
+                                <th>Ücret</th>
+                                <th>Durum / Gecikme</th>
+                                <th>İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="yonetim-kiralamalar-tablo-govdesi">
+                            <!-- JavaScript ile doldurulacaktır -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- BİLDİRİM ÇUBUĞU (TOAST) -->
+    <div id="bildirim-cubugu" class="bildirim-cubugu" role="status" aria-live="polite"></div>
+
+    <!-- ALT BİLGİ (FOOTER) -->
+    <footer class="alt-bilgi">
+        Okul Kütüphanesi - Kitap Kiralama Sistemi &copy; 2026 | Yazılım Test ve Kalite Değerlendirmesi Projesi
+    </footer>
+
+    <!-- SCRIPT DOSYALARI -->
+    <script src="js/veri.js"></script>
+    <script src="js/islemler.js"></script>
+    <script src="js/arayuz.js"></script>
+</body>
+</html>
